@@ -1,0 +1,37 @@
+version: "3"
+
+tasks:
+  build:
+    desc: Build the app
+    cmds:
+      - GOFLAGS=-mod=mod go build -o bin/wikimedia-pageviews-api internal/main.go
+
+  lint:
+    desc: Run the linter
+    cmds:
+      - GOFLAGS=-mod=mod golangci-lint run
+
+  run:
+    desc: Run the app
+    cmds:
+      - GOFLAGS=-mod=mod go run internal/main.go
+
+  swagger.gen:
+    desc: Generate Go code
+    cmds:
+      - GOFLAGS=-mod=mod go generate github.com/mpaktiti/wikimedia-pageviews-api/internal github.com/mpaktiti/wikimedia-pageviews-api/pkg/swagger
+
+  swagger.validate:
+    desc: Validate swagger
+    cmds:
+      - swagger validate pkg/swagger/swagger.yml
+
+  swagger.doc:
+    desc: Doc for swagger
+    cmds:
+      - docker run -i yousan/swagger-yaml-to-html < pkg/swagger/swagger.yml > docs/index.html
+
+  test:
+    desc: Run the tests
+    cmds:
+      - GOFLAGS=-mod=mod go test -count=1 ./...
