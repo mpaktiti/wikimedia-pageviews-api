@@ -3,6 +3,8 @@ package utilities
 import (
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestWeekStart(t *testing.T) {
@@ -31,10 +33,10 @@ func TestWeekStart(t *testing.T) {
 			expectedDay: 25,
 		},
 	}
-	for _, tc := range testCases {
+	for tcNum, tc := range testCases {
 		got := WeekStart(tc.year, tc.week)
 		if got.Day() != tc.expectedDay {
-			t.Errorf("code returned unexpected day: got %v want %v", got.Day(), tc.expectedDay)
+			t.Errorf("test %d failed: got %v want %v", tcNum+1, got.Day(), tc.expectedDay)
 		}
 	}
 }
@@ -71,10 +73,61 @@ func TestLastDayOfMonth(t *testing.T) {
 			expectedDay: time.Date(2023, 12, 31, 0, 0, 0, 0, time.UTC),
 		},
 	}
-	for _, tc := range testCases {
+	for tcNum, tc := range testCases {
 		got, _ := LastDayOfMonth(tc.year, tc.month)
 		if got != tc.expectedDay {
-			t.Errorf("code returned unexpected day: got %v want %v", got, tc.expectedDay)
+			t.Errorf("test %d failed: got %v want %v", tcNum+1, got, tc.expectedDay)
+		}
+	}
+}
+
+func TestPadString(t *testing.T) {
+	testCases := []struct {
+		name           string
+		input          string
+		expectedOutput string
+	}{
+		{
+			name:           "string with 1 character",
+			input:          "1",
+			expectedOutput: "01",
+		},
+		{
+			name:           "string with 2 characters",
+			input:          "01",
+			expectedOutput: "01",
+		},
+	}
+	for tcNum, tc := range testCases {
+		got := PadString(tc.input)
+		if got != tc.expectedOutput {
+			t.Errorf("test %d failed:  got %v want %v", tcNum+1, got, tc.expectedOutput)
+		}
+	}
+}
+
+func TestParseErrorDetails(t *testing.T) {
+	testCases := []struct {
+		name           string
+		input          []byte
+		expectedOutput string
+	}{
+		{
+			name:           "error contains more than 1 error details (array of strings)",
+			input:          []byte(`{"type":"https://mediawiki.org/wiki/HyperSwitch/errors/invalid_request","method":"get","detail":["end timestamp is invalid, must be a valid date in YYYYMMDD format"],"uri":"/analytics.wikimedia.org/v1/pageviews/per-article/en.wikipedia/all-access/all-agents/Albert_Einstein/daily/2031063000/203106700"}`),
+			expectedOutput: "end timestamp is invalid, must be a valid date in YYYYMMDD format. ",
+		},
+		{
+			name:           "error contains a single entry for error details (string)",
+			input:          []byte(`{"type":"https://mediawiki.org/wiki/HyperSwitch/errors/not_found","title":"Not found.","method":"get","detail":"The date(s) you used are valid, but we either do not have data for those date(s), or the project you asked for is not loaded yet.  Please check https://wikimedia.org/api/rest_v1/?doc for more information.","uri":"/analytics.wikimedia.org/v1/pageviews/per-article/en.wikipedia/all-access/all-agents/Albert_Einstein/daily/2025011300/2025012000"}`),
+			expectedOutput: "The date(s) you used are valid, but we either do not have data for those date(s), or the project you asked for is not loaded yet.  Please check https://wikimedia.org/api/rest_v1/?doc for more information.",
+		},
+	}
+	for tcNum, tc := range testCases {
+		got, err := ParseErrorDetails(tc.input)
+		require.NoError(t, err)
+		if got != tc.expectedOutput {
+			t.Errorf("test %d failed:  got %v want %v", tcNum+1, got, tc.expectedOutput)
 		}
 	}
 }

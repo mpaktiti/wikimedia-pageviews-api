@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/mpaktiti/wikimedia-pageviews-api/internal/utilities"
+	"github.com/mpaktiti/wikimedia-pageviews-api/src/utilities"
 )
 
 // TODO Move this to the config file
@@ -34,24 +34,22 @@ func GetPageviewsByWeek(article, year, week string) (int, error) {
 	// TODO this is duplicate code with articles.go, extract it to utilities
 	yearInt, err := strconv.Atoi(year)
 	if err != nil {
-		// TODO log error properly
 		fmt.Println("Error during conversion")
+		return 0, err
 	}
 	weekInt, err := strconv.Atoi(week)
 	if err != nil {
-		// TODO log error properly
 		fmt.Println("Error during conversion")
+		return 0, err
 	}
+
 	// Get week range
 	startDate := utilities.WeekStart(yearInt, weekInt)
 
 	// Build URL
-	// TODO duplicate code
-	month := fmt.Sprint(int(startDate.Month()))
-	if len(month) == 1 {
-		// Wikipedia API expects months and days as 2 digits each so add a zero at the beginning if needed
-		month = "0" + month
-	}
+
+	// Wikipedia API expects months and days as 2 digits each so add a zero at the beginning if needed (done by PadString())
+	month := utilities.PadString(fmt.Sprint(int(startDate.Month())))
 	firstDay := fmt.Sprint(startDate.Year()) + month + fmt.Sprint(startDate.Day()) + "00"
 	lastDay := fmt.Sprint(startDate.Year()) + month + fmt.Sprint(startDate.AddDate(0, 0, 7).Day()) + "00"
 	url := fmt.Sprintf("%s/%s/daily/%s/%s", baseURL, article, firstDay, lastDay)
@@ -70,7 +68,18 @@ func GetPageviewsByWeek(article, year, week string) (int, error) {
 		log.Fatal(err)
 		return 0, err
 	}
-	// fmt.Println(string(responseData))
+
+	// If the request was not successful parse the response for the error and return it
+	if response.StatusCode != http.StatusOK {
+		// return error
+		fmt.Println(string(responseData))
+		errorDetails, err := utilities.ParseErrorDetails(responseData)
+		if err != nil {
+			fmt.Print(err.Error())
+			return 0, fmt.Errorf(response.Status + ": Failed to process error details")
+		}
+		return 0, fmt.Errorf(response.Status + ": " + errorDetails)
+	}
 
 	// Aggregate view counts
 	var items Items
@@ -97,11 +106,7 @@ func GetPageviewsByMonth(article, year, month string) (int, error) {
 	}
 
 	// Build URL
-	// TODO duplicate code
-	if len(month) == 1 {
-		// Wikipedia API expects months and days as 2 digits each so add a zero at the beginning if needed
-		month = "0" + month
-	}
+	month = utilities.PadString(month)
 	firstDay := year + month + "0100"
 	lastDay := year + month + fmt.Sprint(lastOfMonth.Day()) + "00"
 	url := fmt.Sprintf("%s/%s/monthly/%s/%s", baseURL, article, firstDay, lastDay)
@@ -123,7 +128,19 @@ func GetPageviewsByMonth(article, year, month string) (int, error) {
 		log.Fatal(err)
 		return 0, err
 	}
-	fmt.Println(string(responseData))
+
+	// If the request was not successful parse the response for the error and return it
+	if response.StatusCode != http.StatusOK {
+		// return error
+		fmt.Println(string(responseData))
+		fmt.Println(string(response.Status))
+		errorDetails, err := utilities.ParseErrorDetails(responseData)
+		if err != nil {
+			fmt.Print(err.Error())
+			return 0, fmt.Errorf(response.Status + ": Failed to process error details")
+		}
+		return 0, fmt.Errorf(response.Status + ": " + errorDetails)
+	}
 
 	// Parse response and retrieve pageviews number
 	var items Items
@@ -147,17 +164,10 @@ func GetDayWithMostPageviews(article, year, month string) (string, int, error) {
 	}
 
 	// Build URL
-	// TODO duplicate code
-	if len(month) == 1 {
-		// Wikipedia API expects months and days as 2 digits each so add a zero at the beginning if needed
-		month = "0" + month
-	}
+	month = utilities.PadString(month)
 	firstDay := year + month + "0100"
 	lastDay := year + month + fmt.Sprint(lastOfMonth.Day()) + "00"
 	url := fmt.Sprintf("%s/%s/daily/%s/%s", baseURL, article, firstDay, lastDay)
-	fmt.Println("First day: ", firstDay)
-	fmt.Println("Last day: ", lastDay)
-	fmt.Println("URL: ", url)
 
 	// Call the wikipedia API
 	response, err := http.Get(url)
@@ -172,6 +182,18 @@ func GetDayWithMostPageviews(article, year, month string) (string, int, error) {
 	if err != nil {
 		log.Fatal(err)
 		return "", 0, err
+	}
+
+	// If the request was not successful parse the response for the error and return it
+	if response.StatusCode != http.StatusOK {
+		// return error
+		fmt.Println(string(responseData))
+		errorDetails, err := utilities.ParseErrorDetails(responseData)
+		if err != nil {
+			fmt.Print(err.Error())
+			return "", 0, fmt.Errorf(response.Status + ": Failed to process error details")
+		}
+		return "", 0, fmt.Errorf(response.Status + ": " + errorDetails)
 	}
 
 	// Loop through results and find the max pageviews

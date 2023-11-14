@@ -53,9 +53,9 @@ func sortMap(input map[string]int) []string {
 	}
 
 	// Print sorted map
-	for _, k := range keys {
-		fmt.Printf("%s: %d\n", k, input[k])
-	}
+	// for _, k := range keys {
+	// 	fmt.Printf("%s: %d\n", k, input[k])
+	// }
 
 	return keys
 }
@@ -63,75 +63,93 @@ func sortMap(input map[string]int) []string {
 // curl http://localhost:3000/articles/top/weekly/2023/03
 // Returns a list of the most viewed articles for a week
 // If an article is not listed on a given day, we assume it has 0 views
-func GetTopArticlesByWeek(year, week string) {
+// It is assumed that the week starts on Monday
+func GetTopArticlesByWeek(year, week string) (string, error) {
 	// Convert input year and week to integers
 	yearInt, err := strconv.Atoi(year)
 	if err != nil {
 		// TODO log error properly
 		fmt.Println("Error during conversion")
+		return "", err
 	}
 	weekInt, err := strconv.Atoi(week)
 	if err != nil {
 		// TODO log error properly
 		fmt.Println("Error during conversion")
+		// TODO return HTTP code for bad input
+		return "", err
 	}
-	// Get week range
+
+	// Get the first day of the week
 	startDate := utilities.WeekStart(yearInt, weekInt)
-	fmt.Println("Start Date: ", startDate.Day())
-	fmt.Println("End Date + 6: ", startDate.AddDate(0, 0, 6).Day())
-	fmt.Println("Month as a number: ", int(startDate.Month()))
 
 	var urls [7]string
-	var articles []Article
+	var errorStatus, errorDetails string
 	articlesMap := map[string]int{}
 	for i := 0; i < 7; i++ {
-		// 1. Build URLs
-		// Wikipedia API expects months and days as 2 digits each so add a zero at the beginning if needed
-		month := fmt.Sprint(int(startDate.Month()))
-		if len(month) == 1 {
-			month = "0" + month
-		}
-		day := fmt.Sprint(startDate.AddDate(0, 0, i).Day())
-		if len(day) == 1 {
-			day = "0" + day
-		}
+		// Build the URL
+		month := utilities.PadString(fmt.Sprint(int(startDate.Month())))
+		day := utilities.PadString(fmt.Sprint(startDate.AddDate(0, 0, i).Day()))
 		urls[i] = fmt.Sprintf("%s/%s/%s/%s", baseURL, fmt.Sprint(startDate.Year()), month, day)
-		// log.Println("URL: ", urls[i])
 
-		// 2. Call the wikipedia API
+		// Call the wikipedia API
 		response, err := http.Get(urls[i])
 		if err != nil {
 			// TODO log error properly
 			fmt.Print(err.Error())
+			return "", err
 		}
 
-		// 3. Parse response
+		// Parse response
 		responseData, err := io.ReadAll(response.Body)
 		if err != nil {
+			//TODO why do I log.Fatal() here and fmt.Print() earlier?
 			log.Fatal(err)
+			return "", err
 		}
 
-		// 4. Go through articles and add them to a struct?
+		// If an error happens during any of the API calls stop processing, exit the loop, and return the error details
+		if response.StatusCode != http.StatusOK {
+			fmt.Println("Response status: ", response.StatusCode)
+			fmt.Println(string(responseData))
+			errorStatus = response.Status
+			errorDetails, err = utilities.ParseErrorDetails(responseData)
+			if err != nil {
+				fmt.Print(err.Error())
+				errorDetails = "Failed to process error details"
+			}
+			break
+		}
+
+		// Go through articles and add them to a map
 		var items Items
 		err = json.Unmarshal(responseData, &items)
 		if err != nil {
 			fmt.Println("error:", err)
+			return "", err
 		}
-		// fmt.Printf("Call %+v: %+v results\n", i, len(items.Items[0].Articles))
-		articles = append(articles, items.Items[0].Articles...)
 
-		for _, article := range items.Items[0].Articles {
-			if val, ok := articlesMap[article.Article]; ok {
-				articlesMap[article.Article] = article.Views + val
-			} else {
-				articlesMap[article.Article] = article.Views
+		//If any items were found extract them from the response and add them to the map
+		// TODO is this if needed? is there any case where I get HTTP 200 but no articles?
+		if len(items.Items) > 0 {
+			for _, article := range items.Items[0].Articles {
+				if val, ok := articlesMap[article.Article]; ok {
+					articlesMap[article.Article] = article.Views + val
+				} else {
+					articlesMap[article.Article] = article.Views
+				}
 			}
 		}
 	}
 
-	fmt.Printf("Total results: %+v\n", len(articles))
-	fmt.Printf("map: %+v\n", articlesMap)
-	fmt.Printf("map len: %+v\n", len(articlesMap))
+	if errorDetails != "" {
+		return "", fmt.Errorf(errorStatus + ": " + errorDetails)
+	}
+
+	// if there are no results return empty result set
+	if len(articlesMap) == 0 {
+		return "", nil
+	}
 
 	// Sort results and retrieve 10 most viewed
 	sortKeysDesc := sortMap(articlesMap)
@@ -143,18 +161,19 @@ func GetTopArticlesByWeek(year, week string) {
 			Rank:    i + 1,
 		})
 	}
-	// fmt.Printf("TOP 10 ARTICLES: %+v", top10Articles)
 
-	b, err := json.Marshal(top10Articles)
+	// Convert to JSON and return string
+	jsonResult, err := json.Marshal(top10Articles)
 	if err != nil {
-		fmt.Printf("Error: %s", err)
-		return
+		fmt.Println(err)
+		return "", err
 	}
-	fmt.Println("TOP 10 ARTICLES: ", string(b))
+
+	return string(jsonResult), nil
 }
 
 // curl http://localhost:3000/articles/top/monthly/2023/03
-func GetTopArticlesByMonth(year, month string) {
+func GetTopArticlesByMonth(year, month string) (string, error) {
 	// Build URL
 	url := fmt.Sprintf("%s/%s/%s/all-days", baseURL, year, month)
 
@@ -162,28 +181,48 @@ func GetTopArticlesByMonth(year, month string) {
 	response, err := http.Get(url)
 	if err != nil {
 		fmt.Print(err.Error())
+		return "", err
 	}
 
 	// Parse response
 	responseData, err := io.ReadAll(response.Body)
 	if err != nil {
 		log.Fatal(err)
+		return "", err
 	}
 	// fmt.Println(string(responseData))
+
+	// Check if the response in anything else than HTTP 200 and return error
+	if response.StatusCode != http.StatusOK {
+		fmt.Println("Response status: ", response.StatusCode)
+		fmt.Println(string(responseData))
+		errorDetails, err := utilities.ParseErrorDetails(responseData)
+		if err != nil {
+			fmt.Print(err.Error())
+			errorDetails = "Failed to process error details"
+		}
+		return "", fmt.Errorf(response.Status + ": " + errorDetails)
+	}
 
 	// Get top 10 articles
 	var items Items
 	err = json.Unmarshal(responseData, &items)
 	if err != nil {
 		fmt.Println("error:", err)
+		return "", err
 	}
-	top10Articles := items.Items[0].Articles[0:9]
-	fmt.Printf("%+v", top10Articles)
 
-	// b, err := json.Marshal(top10Articles)
-	// if err != nil {
-	// 	fmt.Printf("Error: %s", err)
-	// 	return
-	// }
-	// fmt.Println(string(b))
+	// TODO should I check here if len(items.Items) > 0 ??
+	top10Articles := items.Items[0].Articles[0:10]
+
+	// fmt.Printf("%+v", top10Articles)
+
+	// Convert to JSON and return string
+	jsonResult, err := json.Marshal(top10Articles)
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+
+	return string(jsonResult), nil
 }
