@@ -1,0 +1,126 @@
+{
+	"info": {
+		"_postman_id": "3b3ada48-a027-4db5-b627-6b3aec899fb9",
+		"name": "Wikipedia Pageviews API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "758046"
+	},
+	"item": [
+		{
+			"name": "TopArticlesByWeek",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/articles/top/weekly/2023/03",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"articles",
+						"top",
+						"weekly",
+						"2023",
+						"03"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TopArticlesByMonth",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/articles/top/monthly/2023/03",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"articles",
+						"top",
+						"monthly",
+						"2023",
+						"03"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TotalPageviewsByWeek",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/article/Albert_Einstein/weekly/2023/03",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"article",
+						"Albert_Einstein",
+						"weekly",
+						"2023",
+						"03"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TotalPageviewsByMonth",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/article/Albert_Einstein/monthly/2023/04",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"article",
+						"Albert_Einstein",
+						"monthly",
+						"2023",
+						"04"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DayWithMostPageviews",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/article/Albert_Einstein/top/monthly/2023/04",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"article",
+						"Albert_Einstein",
+						"top",
+						"monthly",
+						"2023",
+						"04"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

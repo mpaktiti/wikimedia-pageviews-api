@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Swagger UI</title>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Source+Code+Pro:300,600|Titillium+Web:400,600,700" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.43.0/swagger-ui.css" >
+  <style>
+    html
+    {
+      box-sizing: border-box;
+      overflow: -moz-scrollbars-vertical;
+      overflow-y: scroll;
+    }
+    *,
+    *:before,
+    *:after
+    {
+      box-sizing: inherit;
+    }
+    body {
+      margin:0;
+      background: #fafafa;
+    }
+  </style>
+</head>
+<body>
+<div id="swagger-ui"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.43.0/swagger-ui-bundle.js"> </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.43.0/swagger-ui-standalone-preset.js"> </script>
+<script>
+window.onload = function() {
+  var spec = {"consumes": ["application/json"], "info": {"description": "HTTP server in Go with Swagger endpoints definition.", "title": "wikimedia-pageviews-api", "version": "0.1.0"}, "produces": ["application/json"], "schemes": ["http"], "servers": [{"url": "http://localhost:3000"}], "swagger": "2.0", "paths": {"/articles/top/weekly/{year}/{week}": {"get": {"description": "Returns a list of the most viewed wikipedia articles for a specific week", "parameters": [{"name": "year", "in": "path", "type": "string", "required": true, "description": "The year for which to retrieve data."}, {"name": "week", "in": "path", "type": "string", "required": true, "description": "The week for which to retrieve data."}], "responses": {"200": {"description": "Returns the top 10 most viewed wikipedia articles for the requested week.", "schema": {"type": "string"}}}}}, "/articles/top/monthly/{year}/{month}": {"get": {"description": "Returns a list of the most viewed wikipedia articles for a specific month", "parameters": [{"name": "year", "in": "path", "type": "string", "required": true, "description": "The year for which to retrieve data."}, {"name": "month", "in": "path", "type": "string", "required": true, "description": "The month for which to retrieve data."}], "responses": {"200": {"description": "Returns the top 10 most viewed wikipedia articles for the requested month.", "schema": {"type": "string"}}}}}, "/article/{article}/weekly/{year}/{week}": {"get": {"description": "Returns the view count of a specific article for a specific week", "parameters": [{"name": "article", "in": "path", "type": "string", "required": true, "description": "The article for which to retrieve data."}, {"name": "year", "in": "path", "type": "string", "required": true, "description": "The year for which to retrieve data."}, {"name": "week", "in": "path", "type": "string", "required": true, "description": "The week for which to retrieve data."}], "responses": {"200": {"description": "Returns the view count for the requested article for the requested week.", "schema": {"type": "string"}}}}}, "/article/{article}/monthly/{year}/{month}": {"get": {"description": "Returns the view count of a specific article for a specific month", "parameters": [{"name": "article", "in": "path", "type": "string", "required": true, "description": "The article for which to retrieve data."}, {"name": "year", "in": "path", "type": "string", "required": true, "description": "The year for which to retrieve data."}, {"name": "month", "in": "path", "type": "string", "required": true, "description": "The month for which to retrieve data."}], "responses": {"200": {"description": "Returns the view count for the requested article for the requested month.", "schema": {"type": "string"}}}}}, "/article/{article}/top/monthly/{year}/{month}": {"get": {"description": "Returns the day of the month where an article got the most page views.", "parameters": [{"name": "article", "in": "path", "type": "string", "required": true, "description": "The article for which to retrieve data."}, {"name": "year", "in": "path", "type": "string", "required": true, "description": "The year for which to retrieve data."}, {"name": "month", "in": "path", "type": "string", "required": true, "description": "The month for which to retrieve data."}], "responses": {"200": {"description": "Returns the day of the month where an article got the most page views.", "schema": {"type": "string"}}}}}}};
+  // Build a system
+  const ui = SwaggerUIBundle({
+    spec: spec,
+    dom_id: '#swagger-ui',
+    deepLinking: true,
+    presets: [
+      SwaggerUIBundle.presets.apis,
+      SwaggerUIStandalonePreset
+    ],
+    plugins: [
+      SwaggerUIBundle.plugins.DownloadUrl
+    ],
+    layout: "StandaloneLayout"
+  })
+  window.ui = ui
+}
+</script>
+</body>
+</html>

@@ -4,7 +4,7 @@ tasks:
   build:
     desc: Build the app
     cmds:
-      - GOFLAGS=-mod=mod go build -o bin/wikimedia-pageviews-api internal/main.go
+      - GOFLAGS=-mod=mod go build -o bin/wikimedia-pageviews-api src/main.go
 
   lint:
     desc: Run the linter
@@ -14,12 +14,12 @@ tasks:
   run:
     desc: Run the app
     cmds:
-      - GOFLAGS=-mod=mod go run internal/main.go
+      - GOFLAGS=-mod=mod go run src/main.go
 
   swagger.gen:
     desc: Generate Go code
     cmds:
-      - GOFLAGS=-mod=mod go generate github.com/mpaktiti/wikimedia-pageviews-api/internal github.com/mpaktiti/wikimedia-pageviews-api/pkg/swagger
+      - GOFLAGS=-mod=mod go generate github.com/mpaktiti/wikimedia-pageviews-api/src github.com/mpaktiti/wikimedia-pageviews-api/pkg/swagger
 
   swagger.validate:
     desc: Validate swagger
@@ -34,4 +34,9 @@ tasks:
   test:
     desc: Run the tests
     cmds:
-      - GOFLAGS=-mod=mod go test -count=1 ./...
+      - GOFLAGS=-mod=mod go test ./...
+
+  test.coverage:
+    desc: Run the tests and show coverage info
+    cmds:
+      - GOFLAGS=-mod=mod go test -coverprofile=c.out ./...

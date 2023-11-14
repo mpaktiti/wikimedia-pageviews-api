@@ -1,0 +1,152 @@
+consumes:
+  - application/json
+info:
+  description: HTTP server in Go with Swagger endpoints definition.
+  title: wikimedia-pageviews-api
+  version: 0.1.0
+produces:
+  - application/json
+schemes:
+  - http
+servers:
+  - url: http://localhost:3000
+swagger: "2.0"
+
+paths:
+  # /healthz:
+  #   get:
+  #     operationId: checkHealth
+  #     produces:
+  #       - text/plain
+  #     responses:
+  #       "200":
+  #         description: OK message.
+  #         schema:
+  #           type: string
+  #           enum:
+  #             - OK
+
+  /articles/top/weekly/{year}/{week}:
+    get:
+      description: Returns a list of the most viewed wikipedia articles for a specific week
+      parameters:
+        - name: year
+          in: path
+          type: string
+          required: true
+          description: The year for which to retrieve data.
+        - name: week
+          in: path
+          type: string
+          required: true
+          description: The week for which to retrieve data.
+      responses:
+        200:
+          description: Returns the top 10 most viewed wikipedia articles for the requested week.
+          schema:
+            type: string
+        # 404:
+        #   description: Invalid characters in "user" were provided.
+
+  /articles/top/monthly/{year}/{month}:
+    get:
+      description: Returns a list of the most viewed wikipedia articles for a specific month
+      parameters:
+        - name: year
+          in: path
+          type: string
+          required: true
+          description: The year for which to retrieve data.
+        - name: month
+          in: path
+          type: string
+          required: true
+          description: The month for which to retrieve data.
+      responses:
+        200:
+          description: Returns the top 10 most viewed wikipedia articles for the requested month.
+          schema:
+            type: string
+        # 404:
+        #   description: Invalid characters in "user" were provided.
+
+  /article/{article}/weekly/{year}/{week}:
+    get:
+      description: Returns the view count of a specific article for a specific week
+      parameters:
+        - name: article
+          in: path
+          type: string
+          required: true
+          description: The article for which to retrieve data.
+        - name: year
+          in: path
+          type: string
+          required: true
+          description: The year for which to retrieve data.
+        - name: week
+          in: path
+          type: string
+          required: true
+          description: The week for which to retrieve data.
+      responses:
+        200:
+          description: Returns the view count for the requested article for the requested week.
+          schema:
+            type: string
+        # 404:
+        #   description: Invalid characters in "user" were provided.
+
+  /article/{article}/monthly/{year}/{month}:
+    get:
+      description: Returns the view count of a specific article for a specific month
+      parameters:
+        - name: article
+          in: path
+          type: string
+          required: true
+          description: The article for which to retrieve data.
+        - name: year
+          in: path
+          type: string
+          required: true
+          description: The year for which to retrieve data.
+        - name: month
+          in: path
+          type: string
+          required: true
+          description: The month for which to retrieve data.
+      responses:
+        200:
+          description: Returns the view count for the requested article for the requested month.
+          schema:
+            type: string
+        # 404:
+        #   description: Invalid characters in "user" were provided.
+
+  /article/{article}/top/monthly/{year}/{month}:
+    get:
+      description: Returns the day of the month where an article got the most page views.
+      parameters:
+        - name: article
+          in: path
+          type: string
+          required: true
+          description: The article for which to retrieve data.
+        - name: year
+          in: path
+          type: string
+          required: true
+          description: The year for which to retrieve data.
+        - name: month
+          in: path
+          type: string
+          required: true
+          description: The month for which to retrieve data.
+      responses:
+        200:
+          description: Returns the day of the month where an article got the most page views.
+          schema:
+            type: string
+        # 404:
+        #   description: Invalid characters in "user" were provided.
