@@ -36,8 +36,8 @@ If you have [Taskfile](https://taskfile.dev/) and/or [Go](https://go.dev/doc/ins
 - list available tasks: `task --list`
 - startup server: `task run` or `go run internal/main.go`
 - generate executable binary: `task build` or `go build -o bin/wikimedia-pageviews-api internal/main.go`
-- run tests: `task test` or `go test`
-- see tests coverage: `task test.coverage` or `go test -coverprofile=c.out ./..`
+- run tests: `task test` or `go test ./...`
+- see tests coverage: `task test.coverage` or `go test -coverprofile=c.out ./...`
 - generate updated docs: `task swagger.doc` or `docker run -i yousan/swagger-yaml-to-html < pkg/swagger/swagger.yml > docs/index.html`
 
 ## API Documentation
