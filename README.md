@@ -9,7 +9,21 @@ docker run --publish 8080:8080 wikimedia-pageviews-api
 
 Send requests to `http://localhost:8080`.
 
+## Run the Tests
+
+```shell
+docker run --publish 8080:8080 wikimedia-pageviews-api sh -c "go test ./..."
+```
+
+With coverage info:
+
+```shell
+docker run --publish 8080:8080 wikimedia-pageviews-api sh -c "go test ./... -coverprofile=c.out ./.."
+```
+
 ## Other Commands
+
+If you have [Taskfile](https://taskfile.dev/) and/or [Go](https://go.dev/doc/install) installed locally, you can use the following commands instead of Docker:
 
 - list available tasks: `task --list`
 - startup server: `task run` or `go run internal/main.go`
@@ -21,12 +35,10 @@ Send requests to `http://localhost:8080`.
 ## API Documentation
 
 - [Swagger docs](docs/index.html)
+
+  ![Swagger docs screenshot](docs/swagger_docs.png "Swagger docs")
+
 - [Postman collection](docs/wikipedia-pageviews-api.postman_collection.json)
-
-## Known Issues and Pending TODO
-
-- If the article has special characters the URL validation for `ViewsPerArticleWeeklyHandler` fails
-- Add health endpoint?
 
 ## Assumptions
 
