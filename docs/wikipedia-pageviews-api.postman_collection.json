@@ -12,12 +12,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3000/articles/top/weekly/2023/03",
+					"raw": "http://localhost:8080/articles/top/weekly/2023/03",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "3000",
+					"port": "8080",
 					"path": [
 						"articles",
 						"top",
@@ -35,12 +35,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3000/articles/top/monthly/2023/03",
+					"raw": "http://localhost:8080/articles/top/monthly/2023/03",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "3000",
+					"port": "8080",
 					"path": [
 						"articles",
 						"top",
@@ -58,12 +58,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3000/article/Albert_Einstein/weekly/2023/03",
+					"raw": "http://localhost:8080/article/Albert_Einstein/weekly/2023/03",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "3000",
+					"port": "8080",
 					"path": [
 						"article",
 						"Albert_Einstein",
@@ -81,12 +81,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3000/article/Albert_Einstein/monthly/2023/04",
+					"raw": "http://localhost:8080/article/Albert_Einstein/monthly/2023/04",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "3000",
+					"port": "8080",
 					"path": [
 						"article",
 						"Albert_Einstein",
@@ -104,12 +104,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3000/article/Albert_Einstein/top/monthly/2023/04",
+					"raw": "http://localhost:8080/article/Albert_Einstein/top/monthly/2023/04",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "3000",
+					"port": "8080",
 					"path": [
 						"article",
 						"Albert_Einstein",
