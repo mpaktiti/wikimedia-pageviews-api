@@ -1,5 +1,13 @@
 # wikimedia-pageviews-api
 
+A Go web server with API endpoints that support the following features:
+
+- Retrieve a list of the most viewed articles from Wikipedia for a week or a month
+- Retrieve the view count of a specific article from Wikipedia for a week or a month
+- Retrieve the day of the month where a Wikipedia article got the most page views
+
+The web servier is using the [Wikipedia API](https://wikitech.wikimedia.org/wiki/Analytics/AQS/Pageviews) to retrieve the info.
+
 ## Run the API
 
 ```shell
