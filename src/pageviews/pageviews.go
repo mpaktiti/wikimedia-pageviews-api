@@ -28,7 +28,7 @@ type Item struct {
 	Views       int
 }
 
-// curl http://localhost:3000/article/Albert_Einstein/weekly/2023/03
+// curl http://localhost:8080/article/Albert_Einstein/weekly/2023/03
 func GetPageviewsByWeek(article, year, week string) (int, error) {
 	// Convert input year and week to integers
 	// TODO this is duplicate code with articles.go, extract it to utilities
@@ -96,7 +96,7 @@ func GetPageviewsByWeek(article, year, week string) (int, error) {
 	return sum, nil
 }
 
-// curl http://localhost:3000/article/Albert_Einstein/monthly/2023/04
+// curl http://localhost:8080/article/Albert_Einstein/monthly/2023/04
 func GetPageviewsByMonth(article, year, month string) (int, error) {
 	lastOfMonth, err := utilities.LastDayOfMonth(year, month)
 	if err != nil {
@@ -153,7 +153,7 @@ func GetPageviewsByMonth(article, year, month string) (int, error) {
 	return items.Items[0].Views, nil
 }
 
-// curl http://localhost:3000/article/Albert_Einstein/top/monthly/2023/04
+// curl http://localhost:8080/article/Albert_Einstein/top/monthly/2023/04
 func GetDayWithMostPageviews(article, year, month string) (string, int, error) {
 	// Get month's last day
 	lastOfMonth, err := utilities.LastDayOfMonth(year, month)

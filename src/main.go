@@ -17,6 +17,6 @@ func main() {
 	r.HandleFunc("/article/{article}/top/monthly/{year}/{month}", handler.TopViewsPerArticleMonthlyHandler)
 	http.Handle("/", r)
 
-	log.Println("Listening on localhost:3000")
-	log.Fatal(http.ListenAndServe(":3000", nil))
+	log.Println("Listening on localhost:8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }

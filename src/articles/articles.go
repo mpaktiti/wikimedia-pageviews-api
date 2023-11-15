@@ -60,7 +60,7 @@ func sortMap(input map[string]int) []string {
 	return keys
 }
 
-// curl http://localhost:3000/articles/top/weekly/2023/03
+// curl http://localhost:8080/articles/top/weekly/2023/03
 // Returns a list of the most viewed articles for a week
 // If an article is not listed on a given day, we assume it has 0 views
 // It is assumed that the week starts on Monday
@@ -172,7 +172,7 @@ func GetTopArticlesByWeek(year, week string) (string, error) {
 	return string(jsonResult), nil
 }
 
-// curl http://localhost:3000/articles/top/monthly/2023/03
+// curl http://localhost:8080/articles/top/monthly/2023/03
 func GetTopArticlesByMonth(year, month string) (string, error) {
 	// Build URL
 	url := fmt.Sprintf("%s/%s/%s/all-days", baseURL, year, month)

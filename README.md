@@ -1,5 +1,16 @@
 # wikimedia-pageviews-api
 
+## Run the API
+
+```shell
+docker build -t wikimedia-pageviews-api .
+docker run --publish 8080:8080 wikimedia-pageviews-api
+```
+
+Send requests to `http://localhost:8080`.
+
+## Other Commands
+
 - list available tasks: `task --list`
 - startup server: `task run` or `go run internal/main.go`
 - generate executable binary: `task build` or `go build -o bin/wikimedia-pageviews-api internal/main.go`
@@ -7,13 +18,15 @@
 - see tests coverage: `task test.coverage` or `go test -coverprofile=c.out ./..`
 - generate updated docs: `task swagger.doc` or `docker run -i yousan/swagger-yaml-to-html < pkg/swagger/swagger.yml > docs/index.html`
 
-## Swagger API Documentation
+## API Documentation
 
-See [docs](docs/index.html)
+- [Swagger docs](docs/index.html)
+- [Postman collection](docs/Wikipedia%20Pageviews%20API.postman_collection.json)
 
 ## Known Issues and Pending TODO
 
 - If the article has special characters the URL validation for `ViewsPerArticleWeeklyHandler` fails
+- Add health endpoint?
 
 ## Assumptions
 
