@@ -41,6 +41,7 @@ func TopArticlesWeeklyHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("ERROR: ", err)
 		statusCode, conversionErr := strconv.Atoi(err.Error()[:3])
 		if conversionErr != nil {
+			fmt.Println("ERROR: ", err)
 			// if you cannot parse the status returned from the API, return 500
 			statusCode = http.StatusInternalServerError
 		}
@@ -61,6 +62,7 @@ func TopArticlesMonthlyHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("ERROR: ", err)
 		statusCode, conversionErr := strconv.Atoi(err.Error()[:3])
 		if conversionErr != nil {
+			fmt.Println("ERROR: ", err)
 			// if you cannot parse the status returned from the API, return 500
 			statusCode = http.StatusInternalServerError
 		}
@@ -78,6 +80,7 @@ func ViewsPerArticleWeeklyHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	pageviews, err := pageviews.GetPageviewsByWeek(vars["article"], vars["year"], vars["week"])
 	if err != nil {
+		fmt.Println("ERROR: ", err)
 		// Parse returned error to see if there is an HTTP status there
 		statusCode := parseStatusCode(err.Error()[:3])
 		w.WriteHeader(statusCode)
@@ -85,6 +88,7 @@ func ViewsPerArticleWeeklyHandler(w http.ResponseWriter, r *http.Request) {
 		// Convert returned error to JSON
 		res, err := convertError(err.Error())
 		if err != nil {
+			fmt.Println("ERROR: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 		w.Write(res)
@@ -94,6 +98,7 @@ func ViewsPerArticleWeeklyHandler(w http.ResponseWriter, r *http.Request) {
 	// Convert pageviews result to JSON
 	res, err := converters.ConvertPageviewsToJson(pageviews)
 	if err != nil {
+		fmt.Println("ERROR: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		res, _ := convertError(err.Error())
 		w.Write([]byte(res))
@@ -107,6 +112,7 @@ func ViewsPerArticleMonthlyHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	pageviews, err := pageviews.GetPageviewsByMonth(vars["article"], vars["year"], vars["month"])
 	if err != nil {
+		fmt.Println("ERROR: ", err)
 		// Parse returned error to see if there is an HTTP status there
 		statusCode := parseStatusCode(err.Error()[:3])
 		w.WriteHeader(statusCode)
@@ -114,6 +120,7 @@ func ViewsPerArticleMonthlyHandler(w http.ResponseWriter, r *http.Request) {
 		// Convert returned error to JSON
 		res, err := convertError(err.Error())
 		if err != nil {
+			fmt.Println("ERROR: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 		w.Write(res)
@@ -123,6 +130,7 @@ func ViewsPerArticleMonthlyHandler(w http.ResponseWriter, r *http.Request) {
 	// Convert pageviews result to JSON
 	res, err := converters.ConvertPageviewsToJson(pageviews)
 	if err != nil {
+		fmt.Println("ERROR: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		res, _ := convertError(err.Error())
 		w.Write([]byte(res))
@@ -136,6 +144,7 @@ func TopViewsPerArticleMonthlyHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	timestamp, pageviews, err := pageviews.GetDayWithMostPageviews(vars["article"], vars["year"], vars["month"])
 	if err != nil {
+		fmt.Println("ERROR: ", err)
 		// Parse returned error to see if there is an HTTP status there
 		statusCode := parseStatusCode(err.Error()[:3])
 		w.WriteHeader(statusCode)
@@ -143,6 +152,7 @@ func TopViewsPerArticleMonthlyHandler(w http.ResponseWriter, r *http.Request) {
 		// Convert returned error to JSON
 		res, err := convertError(err.Error())
 		if err != nil {
+			fmt.Println("ERROR: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 		w.Write(res)
@@ -152,6 +162,7 @@ func TopViewsPerArticleMonthlyHandler(w http.ResponseWriter, r *http.Request) {
 	// Convert pageviews result to JSON
 	res, err := converters.ConvertTopDayPageviewsToJson(timestamp, pageviews)
 	if err != nil {
+		fmt.Println("ERROR: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		res, _ := convertError(err.Error())
 		w.Write([]byte(res))

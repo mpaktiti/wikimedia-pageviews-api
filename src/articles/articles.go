@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"sort"
 	"strconv"
@@ -68,14 +67,11 @@ func GetTopArticlesByWeek(year, week string) (string, error) {
 	// Convert input year and week to integers
 	yearInt, err := strconv.Atoi(year)
 	if err != nil {
-		// TODO log error properly
-		fmt.Println("Error during conversion")
+		// TODO return HTTP code for bad input
 		return "", err
 	}
 	weekInt, err := strconv.Atoi(week)
 	if err != nil {
-		// TODO log error properly
-		fmt.Println("Error during conversion")
 		// TODO return HTTP code for bad input
 		return "", err
 	}
@@ -103,15 +99,11 @@ func GetTopArticlesByWeek(year, week string) (string, error) {
 		// Parse response
 		responseData, err := io.ReadAll(response.Body)
 		if err != nil {
-			//TODO why do I log.Fatal() here and fmt.Print() earlier?
-			log.Fatal(err)
 			return "", err
 		}
 
 		// If an error happens during any of the API calls stop processing, exit the loop, and return the error details
 		if response.StatusCode != http.StatusOK {
-			fmt.Println("Response status: ", response.StatusCode)
-			fmt.Println(string(responseData))
 			errorStatus = response.Status
 			errorDetails, err = utilities.ParseErrorDetails(responseData)
 			if err != nil {
@@ -125,7 +117,6 @@ func GetTopArticlesByWeek(year, week string) (string, error) {
 		var items Items
 		err = json.Unmarshal(responseData, &items)
 		if err != nil {
-			fmt.Println("error:", err)
 			return "", err
 		}
 
@@ -165,7 +156,6 @@ func GetTopArticlesByWeek(year, week string) (string, error) {
 	// Convert to JSON and return string
 	jsonResult, err := json.Marshal(top10Articles)
 	if err != nil {
-		fmt.Println(err)
 		return "", err
 	}
 
@@ -187,15 +177,11 @@ func GetTopArticlesByMonth(year, month string) (string, error) {
 	// Parse response
 	responseData, err := io.ReadAll(response.Body)
 	if err != nil {
-		log.Fatal(err)
 		return "", err
 	}
-	// fmt.Println(string(responseData))
 
 	// Check if the response in anything else than HTTP 200 and return error
 	if response.StatusCode != http.StatusOK {
-		fmt.Println("Response status: ", response.StatusCode)
-		fmt.Println(string(responseData))
 		errorDetails, err := utilities.ParseErrorDetails(responseData)
 		if err != nil {
 			fmt.Print(err.Error())
@@ -208,7 +194,6 @@ func GetTopArticlesByMonth(year, month string) (string, error) {
 	var items Items
 	err = json.Unmarshal(responseData, &items)
 	if err != nil {
-		fmt.Println("error:", err)
 		return "", err
 	}
 
@@ -220,7 +205,6 @@ func GetTopArticlesByMonth(year, month string) (string, error) {
 	// Convert to JSON and return string
 	jsonResult, err := json.Marshal(top10Articles)
 	if err != nil {
-		fmt.Println(err)
 		return "", err
 	}
 

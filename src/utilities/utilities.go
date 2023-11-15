@@ -2,7 +2,6 @@ package utilities
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 	"time"
 )
@@ -31,7 +30,6 @@ func ParseErrorDetails(response []byte) (string, error) {
 			var errorResponse ErrorResponseWithMultipleDetails
 			err := json.Unmarshal(response, &errorResponse)
 			if err != nil {
-				fmt.Println("error:", err)
 				return "", err
 			}
 			errors := ""
@@ -40,24 +38,10 @@ func ParseErrorDetails(response []byte) (string, error) {
 			}
 			return errors, nil
 		}
-		fmt.Println("error:", err)
 		return "", err
 	}
 
 	return errorResponse.Detail, nil
-
-	// Try approach using map[string]interface{} instead of structs
-	// var result map[string]interface{}
-	// err := json.Unmarshal([]byte(string(response)), &result)
-	// if err != nil {
-	// 	// print out if error is not nil
-	// 	fmt.Println(err)
-	// }
-	// for key, value := range result {
-	// 	fmt.Println(key, ":", value)
-	// }
-
-	// return result["detail"].(string), nil
 }
 
 func WeekStart(year, week int) time.Time {
@@ -85,13 +69,10 @@ func LastDayOfMonth(year, month string) (time.Time, error) {
 	yearInt, err := strconv.Atoi(year)
 	if err != nil {
 		// TODO log error properly
-		fmt.Println("Error during conversion")
 		return time.Time{}, err
 	}
 	monthInt, err := strconv.Atoi(month)
 	if err != nil {
-		// TODO log error properly
-		fmt.Println("Error during conversion")
 		return time.Time{}, err
 	}
 	firstOfMonth := time.Date(yearInt, time.Month(monthInt), 1, 0, 0, 0, 0, time.UTC)

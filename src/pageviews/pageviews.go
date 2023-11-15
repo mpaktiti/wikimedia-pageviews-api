@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -34,12 +33,10 @@ func GetPageviewsByWeek(article, year, week string) (int, error) {
 	// TODO this is duplicate code with articles.go, extract it to utilities
 	yearInt, err := strconv.Atoi(year)
 	if err != nil {
-		fmt.Println("Error during conversion")
 		return 0, err
 	}
 	weekInt, err := strconv.Atoi(week)
 	if err != nil {
-		fmt.Println("Error during conversion")
 		return 0, err
 	}
 
@@ -65,14 +62,12 @@ func GetPageviewsByWeek(article, year, week string) (int, error) {
 	// Parse response
 	responseData, err := io.ReadAll(response.Body)
 	if err != nil {
-		log.Fatal(err)
 		return 0, err
 	}
 
 	// If the request was not successful parse the response for the error and return it
 	if response.StatusCode != http.StatusOK {
 		// return error
-		fmt.Println(string(responseData))
 		errorDetails, err := utilities.ParseErrorDetails(responseData)
 		if err != nil {
 			fmt.Print(err.Error())
@@ -85,7 +80,6 @@ func GetPageviewsByWeek(article, year, week string) (int, error) {
 	var items Items
 	err = json.Unmarshal(responseData, &items)
 	if err != nil {
-		fmt.Println("error:", err)
 		return 0, err
 	}
 	sum := 0
@@ -100,8 +94,6 @@ func GetPageviewsByWeek(article, year, week string) (int, error) {
 func GetPageviewsByMonth(article, year, month string) (int, error) {
 	lastOfMonth, err := utilities.LastDayOfMonth(year, month)
 	if err != nil {
-		// TODO log error properly
-		fmt.Println("Error calculating month's end date")
 		return 0, err
 	}
 
@@ -110,9 +102,6 @@ func GetPageviewsByMonth(article, year, month string) (int, error) {
 	firstDay := year + month + "0100"
 	lastDay := year + month + fmt.Sprint(lastOfMonth.Day()) + "00"
 	url := fmt.Sprintf("%s/%s/monthly/%s/%s", baseURL, article, firstDay, lastDay)
-	fmt.Println("First day: ", firstDay)
-	fmt.Println("Last day: ", lastDay)
-	fmt.Println("URL: ", url)
 
 	// Call the wikipedia API
 	response, err := http.Get(url)
@@ -125,15 +114,12 @@ func GetPageviewsByMonth(article, year, month string) (int, error) {
 	// Parse response
 	responseData, err := io.ReadAll(response.Body)
 	if err != nil {
-		log.Fatal(err)
 		return 0, err
 	}
 
 	// If the request was not successful parse the response for the error and return it
 	if response.StatusCode != http.StatusOK {
 		// return error
-		fmt.Println(string(responseData))
-		fmt.Println(string(response.Status))
 		errorDetails, err := utilities.ParseErrorDetails(responseData)
 		if err != nil {
 			fmt.Print(err.Error())
@@ -146,7 +132,6 @@ func GetPageviewsByMonth(article, year, month string) (int, error) {
 	var items Items
 	err = json.Unmarshal(responseData, &items)
 	if err != nil {
-		fmt.Println("error:", err)
 		return 0, err
 	}
 
@@ -158,8 +143,6 @@ func GetDayWithMostPageviews(article, year, month string) (string, int, error) {
 	// Get month's last day
 	lastOfMonth, err := utilities.LastDayOfMonth(year, month)
 	if err != nil {
-		// TODO log error properly
-		fmt.Println("Error calculating month's end date")
 		return "", 0, err
 	}
 
@@ -180,14 +163,12 @@ func GetDayWithMostPageviews(article, year, month string) (string, int, error) {
 	// Parse response
 	responseData, err := io.ReadAll(response.Body)
 	if err != nil {
-		log.Fatal(err)
 		return "", 0, err
 	}
 
 	// If the request was not successful parse the response for the error and return it
 	if response.StatusCode != http.StatusOK {
 		// return error
-		fmt.Println(string(responseData))
 		errorDetails, err := utilities.ParseErrorDetails(responseData)
 		if err != nil {
 			fmt.Print(err.Error())
@@ -201,7 +182,6 @@ func GetDayWithMostPageviews(article, year, month string) (string, int, error) {
 	var items Items
 	err = json.Unmarshal(responseData, &items)
 	if err != nil {
-		fmt.Println("error:", err)
 		return "", 0, err
 	}
 	topPageviews := 0

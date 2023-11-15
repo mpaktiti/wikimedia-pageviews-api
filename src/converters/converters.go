@@ -23,7 +23,6 @@ func ConvertPageviewsToJson(input int) ([]byte, error) {
 	pageviews := &Pageviews{Pageviews: fmt.Sprint(input)}
 	res, err := json.Marshal(pageviews)
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 	return res, nil
@@ -37,7 +36,6 @@ func ConvertTopDayPageviewsToJson(timestamp string, pageviews int) ([]byte, erro
 	}
 	res, err := json.Marshal(topDayPageviews)
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 	return res, nil
@@ -48,7 +46,6 @@ func ConvertErrorToJson(input string) ([]byte, error) {
 	error := &Error{Error: input}
 	res, err := json.Marshal(error)
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 	return res, nil
