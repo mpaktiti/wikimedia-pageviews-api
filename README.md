@@ -61,8 +61,8 @@ If you have [Taskfile](https://taskfile.dev/) and/or [Go](https://go.dev/doc/ins
 - Use HTTPS. Currently the API uses HTTP but in a real world scenario we would encrypt the communication using SSL/TLS.
 - Add healthcheck endpoint.
 - Improve test coverage, especially for handlers (currently the error cases are not covered).
-- Improve input validation. For example, the API does validate that the input for year, month, or week is numeric but it does not validate if that is a valid number (for example the week is not greater than 52).
-- The regular expressions that match the URL called with the route could use some more work. The one validating the article name works for most wikipedia articles, but fails for some cases with weird characters. For example if you call try to get the pageviews for the article `https://en.wikipedia.org/wiki/Æthelred_the_Unready` you will get a 404 as the refexp cannot match the request to a route. However, if you URL-encode the input it will work: `http://localhost:8080/article/%25C3%2586thelred_the_Unready/weekly/2023/03`.
+- Improve input validation. The API validates that the input for year, month, or week is numeric and that the number is within bounds for year and week, but it does not validate the month. As a result calls with month > 12 will error out after the server calls the Wikipedia API. It's best to validate input at the beginning, before any calls are made
+- Improve the regular expressions that match the URL called with the route. The one validating the article name works for most wikipedia articles, but fails for some cases with weird characters. For example if you call try to get the pageviews for the article `https://en.wikipedia.org/wiki/Æthelred_the_Unready` you will get a 404 as the regexp cannot match the request to a route. However, if you URL-encode the input it will work: `http://localhost:8080/article/%25C3%2586thelred_the_Unready/weekly/2023/03`.
 - Documentation: move documentation in the code by adding swagger comments and be able to generate updated documentation. Use [go-swagger](https://github.com/go-swagger/go-swagger) to do that.
 - Improve error responses: currently when an error occurs the API returns a JSON doc containing one `Error` string. Refactor this to include more info properly structured. For example:
   ```json
@@ -76,6 +76,6 @@ If you have [Taskfile](https://taskfile.dev/) and/or [Go](https://go.dev/doc/ins
 - Mocking: currently the API tests are making calls to the wikipedia API. We can moke the API and test against the expected results.
 - Configuration file: move values like the wikipedia base URL, port number, etc in a configuration file
 - Make the start of the week part of the API input. It could be Monday, Sunday, or Saturday (if the API was available to the Middle East or North Africa).
-- The Wikipedia API has some rules that were not taken into consideration.
+- The Wikipedia API has some rules that were not taken into consideration or the scope of this exercise (e.g. headers to set).
 - API versioning.
 - Note that there are more small improvements noted throughtout the codebase using `// Enhancement:` or `// TODO:`

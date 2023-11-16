@@ -19,34 +19,23 @@ servers:
 swagger: "2.0"
 
 paths:
-  # /healthz:
-  #   get:
-  #     operationId: checkHealth
-  #     produces:
-  #       - text/plain
-  #     responses:
-  #       "200":
-  #         description: OK message.
-  #         schema:
-  #           type: string
-  #           enum:
-  #             - OK
-
   /articles/top/weekly/{year}/{week}:
     get:
       summary: Finds Top 10 Articles by week
-      description: Returns a list of the top 10 most viewed wikipedia articles for a specific week
+      description: Returns a list of the top 10 most viewed wikipedia articles for a specific week.
       parameters:
         - name: year
           in: path
           type: string
           required: true
-          description: The year for which to retrieve data.
+          description: The year of the date for which to retrieve top articles, in YYYY format.
+          example: 2023
         - name: week
           in: path
           type: string
           required: true
-          description: The week for which to retrieve data.
+          description: The week of the date for which to retrieve top articles, in WW format.
+          example: 10
       responses:
         200:
           description: OK
@@ -91,17 +80,9 @@ paths:
                 ],
             }
           schema:
-            type: application/json
-            schema:
-              $ref: "#/components/schemas/Article"
-          # content:
-          #   application/json:
-          #     schema:
-          #     type: array
-          #       items:
-          #         $ref: '#/components/schemas/Article'
+            $ref: "#/components/schemas/ArrayOfArticles"
         400:
-          description: Invalid input
+          description: Invalid input.
           examples:
             {
               "application/json":
@@ -122,18 +103,20 @@ paths:
   /articles/top/monthly/{year}/{month}:
     get:
       summary: Finds Top 10 Articles by month
-      description: Returns a list of the top 10 most viewed wikipedia articles for a specific month
+      description: Returns a list of the top 10 most viewed wikipedia articles for a specific month.
       parameters:
         - name: year
           in: path
           type: string
           required: true
-          description: The year for which to retrieve data.
+          description: The year of the date for which to retrieve top articles, in YYYY format.
+          example: 2023
         - name: month
           in: path
           type: string
           required: true
-          description: The month for which to retrieve data.
+          description: The month of the date for which to retrieve top articles, in MM format.
+          example: 10
       responses:
         200:
           description: OK
@@ -178,7 +161,7 @@ paths:
                 ],
             }
           schema:
-            type: string
+            $ref: "#/components/schemas/ArrayOfArticles"
         400:
           description: Invalid input
           examples:
@@ -201,29 +184,32 @@ paths:
   /article/{article}/weekly/{year}/{week}:
     get:
       summary: Finds Total Pageviews for an article by week
-      description: Returns the view count of a specific article for a specific week
+      description: Returns the view count of a specific article for a specific week.
       parameters:
         - name: article
           in: path
           type: string
           required: true
-          description: The article for which to retrieve data.
+          description: The article for which to retrieve data. Is required and consists of alphanumeric and special characters. Extended ASCII characters should be URL-encoded.
+          example: Davy's_on_the_Road_Again
         - name: year
           in: path
           type: string
           required: true
-          description: The year for which to retrieve data.
+          description: The year of the date for which to retrieve top articles, in YYYY format.
+          example: 2023
         - name: week
           in: path
           type: string
           required: true
-          description: The week for which to retrieve data.
+          description: The week of the date for which to retrieve top articles, in WW format.
+          example: 10
       responses:
         200:
           description: OK
           examples: { "application/json": { "Pageviews": "182568" } }
           schema:
-            type: string
+            $ref: "#/components/schemas/TotalPageviews"
         400:
           description: Invalid input
           examples:
@@ -246,29 +232,32 @@ paths:
   /article/{article}/monthly/{year}/{month}:
     get:
       summary: Finds Total Pageviews for an article by month
-      description: Returns the view count of a specific article for a specific month
+      description: Returns the view count of a specific article for a specific month.
       parameters:
         - name: article
           in: path
           type: string
           required: true
-          description: The article for which to retrieve data.
+          description: The article for which to retrieve data. Is required and consists of alphanumeric and special characters. Extended ASCII characters should be URL-encoded.
+          example: Davy's_on_the_Road_Again
         - name: year
           in: path
           type: string
           required: true
-          description: The year for which to retrieve data.
+          description: The year of the date for which to retrieve top articles, in YYYY format.
+          example: 2023
         - name: month
           in: path
           type: string
           required: true
-          description: The month for which to retrieve data.
+          description: The month of the date for which to retrieve top articles, in MM format.
+          example: 10
       responses:
         200:
           description: OK
           examples: { "application/json": { "Pageviews": "182568" } }
           schema:
-            type: string
+            $ref: "#/components/schemas/TotalPageviews"
         400:
           description: Invalid input
           examples:
@@ -302,12 +291,14 @@ paths:
           in: path
           type: string
           required: true
-          description: The year for which to retrieve data.
+          description: The year of the date for which to retrieve top articles, in YYYY format.
+          example: 2023
         - name: month
           in: path
           type: string
           required: true
-          description: The month for which to retrieve data.
+          description: The month of the date for which to retrieve top articles, in MM format.
+          example: 10
       responses:
         200:
           description: OK
@@ -317,7 +308,7 @@ paths:
                 { "Pageviews": "30724", "Timestamp": "2023042200" },
             }
           schema:
-            type: string
+            $ref: "#/components/schemas/TopDayPageviews"
         400:
           description: Invalid input
           examples:
@@ -339,17 +330,34 @@ paths:
 
 components:
   schemas:
-    Article:
+    ArrayOfArticles:
+      type: array
+      items:
+        type: object
+        properties:
+          Article:
+            type: string
+            example: "The_Last_of_Us_(TV_series)"
+          Views:
+            type: integer
+            format: int64
+            example: 2502335
+          Rank:
+            type: integer
+            format: int64
+            example: 10
+    TopDayPageviews:
       type: object
       properties:
-        Article:
+        Pageviews:
           type: string
-          example: "The_Last_of_Us_(TV_series)"
-        Views:
-          type: integer
-          format: int64
-          example: 2502335
-        Rank:
-          type: integer
-          format: int64
-          example: 10
+          example: "30724"
+        Timestamp:
+          type: string
+          example: "2023042200"
+    TotalPageviews:
+      type: object
+      properties:
+        Pageviews:
+          type: string
+          example: "30724"
