@@ -44,8 +44,15 @@ func TopArticlesWeeklyHandler(w http.ResponseWriter, r *http.Request) {
 			// if you cannot parse the status returned from the API, return 500
 			statusCode = http.StatusInternalServerError
 		}
-		w.WriteHeader(statusCode)
-		w.Write([]byte(err.Error()))
+		// Convert returned error to JSON
+		res, err := convertError(err.Error())
+		if err != nil {
+			fmt.Println("ERROR: ", err)
+			w.WriteHeader(http.StatusInternalServerError)
+		} else {
+			w.WriteHeader(statusCode)
+		}
+		w.Write(res)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -64,8 +71,15 @@ func TopArticlesMonthlyHandler(w http.ResponseWriter, r *http.Request) {
 			// if you cannot parse the status returned from the API, return 500
 			statusCode = http.StatusInternalServerError
 		}
-		w.WriteHeader(statusCode)
-		w.Write([]byte(err.Error()))
+		// Convert returned error to JSON
+		res, err := convertError(err.Error())
+		if err != nil {
+			fmt.Println("ERROR: ", err)
+			w.WriteHeader(http.StatusInternalServerError)
+		} else {
+			w.WriteHeader(statusCode)
+		}
+		w.Write(res)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
