@@ -176,7 +176,6 @@ func GetTopArticlesByMonth(year, month string) (string, error) {
 		return "", err
 	}
 
-	// TODO add test case for this
 	// Validate that input year is not out of bounds
 	err = utilities.ValidateInputYear(yearInt)
 	if err != nil {

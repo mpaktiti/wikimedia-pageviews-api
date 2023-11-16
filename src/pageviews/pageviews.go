@@ -109,7 +109,6 @@ func GetPageviewsByMonth(article, year, month string) (int, error) {
 		return 0, err
 	}
 
-	// TODO add test case for this
 	// Validate that input year is not out of bounds
 	err = utilities.ValidateInputYear(yearInt)
 	if err != nil {
@@ -168,7 +167,6 @@ func GetDayWithMostPageviews(article, year, month string) (string, int, error) {
 		return "", 0, err
 	}
 
-	// TODO add test case for this
 	// Validate that input year is not out of bounds
 	err = utilities.ValidateInputYear(yearInt)
 	if err != nil {

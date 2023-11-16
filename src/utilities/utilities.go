@@ -22,7 +22,6 @@ type ErrorResponseWithMultipleDetails struct {
 	URI    string
 }
 
-// TODO write tests
 func ParseErrorDetails(response []byte) (string, error) {
 	var errorResponse ErrorResponse
 	err := json.Unmarshal(response, &errorResponse)
@@ -84,7 +83,6 @@ func LastDayOfMonth(year, month string) (time.Time, error) {
 }
 
 // Returns the last week of the input year
-// TODO write tests
 func lastWeekOfYear(year string) (int, error) {
 	yearToInt, err := strconv.Atoi(year)
 	if err != nil {

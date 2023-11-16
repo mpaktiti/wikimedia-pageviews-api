@@ -76,22 +76,22 @@ func TestGetTopArticlesByMonth(t *testing.T) {
 			expectedError:    "400 Bad Request: Given year/month/day is invalid date",
 		},
 		{
-			name:             "error case: HTTP 404 for invalid input (future date)",
+			name:             "error case: HTTP 400 for invalid input (future date)",
 			year:             "2030",
 			month:            "03",
 			expectedArticles: "",
-			expectedError:    "404 Not Found: The date(s) you used are valid, but we either do not have data for those date(s), or the project you asked for is not loaded yet. Please check documentation for more information.",
+			expectedError:    "400 Bad Request: input year cannot be greater than current year",
 		},
 	}
 	for i, tc := range testCases {
 		gotArticles, gotError := GetTopArticlesByMonth(tc.year, tc.month)
 		if tc.expectedError != "" {
 			require.Error(t, gotError)
-			assertResponseField(t, i, gotError.Error(), tc.expectedError)
+			assertExpectedOutput(t, i, gotError.Error(), tc.expectedError)
 		} else {
 			require.NoError(t, gotError)
 		}
-		assertResponseField(t, i, gotArticles, tc.expectedArticles)
+		assertExpectedOutput(t, i, gotArticles, tc.expectedArticles)
 	}
 }
 
@@ -150,15 +150,15 @@ func TestGetTopArticlesByWeek(t *testing.T) {
 		gotArticles, gotError := GetTopArticlesByWeek(tc.year, tc.week)
 		if tc.expectedError != "" {
 			require.Error(t, gotError)
-			assertResponseField(t, i, gotError.Error(), tc.expectedError)
+			assertExpectedOutput(t, i, gotError.Error(), tc.expectedError)
 		} else {
 			require.NoError(t, gotError)
 		}
-		assertResponseField(t, i, gotArticles, tc.expectedArticles)
+		assertExpectedOutput(t, i, gotArticles, tc.expectedArticles)
 	}
 }
 
-func assertResponseField(t testing.TB, testNum int, got, want interface{}) {
+func assertExpectedOutput(t testing.TB, testNum int, got, want interface{}) {
 	t.Helper()
 	if got != want {
 		t.Errorf("test %d failed: got %v want %v", testNum+1, got, want)

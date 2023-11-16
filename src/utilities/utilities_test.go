@@ -1,6 +1,7 @@
 package utilities
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -9,75 +10,71 @@ import (
 
 func TestWeekStart(t *testing.T) {
 	testCases := []struct {
-		name        string
-		year        int
-		week        int
-		expectedDay int
+		name           string
+		year           int
+		week           int
+		expectedOutput int
 	}{
 		{
-			name:        "week 01",
-			year:        2023,
-			week:        01,
-			expectedDay: 2,
+			name:           "week 01",
+			year:           2023,
+			week:           01,
+			expectedOutput: 2,
 		},
 		{
-			name:        "week 31",
-			year:        2023,
-			week:        31,
-			expectedDay: 31,
+			name:           "week 31",
+			year:           2023,
+			week:           31,
+			expectedOutput: 31,
 		},
 		{
-			name:        "week 52",
-			year:        2023,
-			week:        52,
-			expectedDay: 25,
+			name:           "week 52",
+			year:           2023,
+			week:           52,
+			expectedOutput: 25,
 		},
 	}
 	for tcNum, tc := range testCases {
 		got := WeekStart(tc.year, tc.week)
-		if got.Day() != tc.expectedDay {
-			t.Errorf("test %d failed: got %v want %v", tcNum+1, got.Day(), tc.expectedDay)
-		}
+		assertExpectedOutput(t, tcNum, got.Day(), tc.expectedOutput)
 	}
 }
 
 func TestLastDayOfMonth(t *testing.T) {
 	testCases := []struct {
-		name        string
-		year        string
-		month       string
-		expectedDay time.Time
+		name           string
+		year           string
+		month          string
+		expectedOutput time.Time
 	}{
 		{
-			name:        "January 2020",
-			year:        "2020",
-			month:       "01",
-			expectedDay: time.Date(2020, 1, 31, 0, 0, 0, 0, time.UTC),
+			name:           "January 2020",
+			year:           "2020",
+			month:          "01",
+			expectedOutput: time.Date(2020, 1, 31, 0, 0, 0, 0, time.UTC),
 		},
 		{
-			name:        "February 2020",
-			year:        "2020",
-			month:       "02",
-			expectedDay: time.Date(2020, 2, 29, 0, 0, 0, 0, time.UTC),
+			name:           "February 2020",
+			year:           "2020",
+			month:          "02",
+			expectedOutput: time.Date(2020, 2, 29, 0, 0, 0, 0, time.UTC),
 		},
 		{
-			name:        "February 2022",
-			year:        "2022",
-			month:       "02",
-			expectedDay: time.Date(2022, 2, 28, 0, 0, 0, 0, time.UTC),
+			name:           "February 2022",
+			year:           "2022",
+			month:          "02",
+			expectedOutput: time.Date(2022, 2, 28, 0, 0, 0, 0, time.UTC),
 		},
 		{
-			name:        "December 2023",
-			year:        "2023",
-			month:       "12",
-			expectedDay: time.Date(2023, 12, 31, 0, 0, 0, 0, time.UTC),
+			name:           "December 2023",
+			year:           "2023",
+			month:          "12",
+			expectedOutput: time.Date(2023, 12, 31, 0, 0, 0, 0, time.UTC),
 		},
 	}
 	for tcNum, tc := range testCases {
 		got, _ := LastDayOfMonth(tc.year, tc.month)
-		if got != tc.expectedDay {
-			t.Errorf("test %d failed: got %v want %v", tcNum+1, got, tc.expectedDay)
-		}
+		assertExpectedOutput(t, tcNum, got, tc.expectedOutput)
 	}
 }
 
@@ -100,9 +97,7 @@ func TestPadString(t *testing.T) {
 	}
 	for tcNum, tc := range testCases {
 		got := PadString(tc.input)
-		if got != tc.expectedOutput {
-			t.Errorf("test %d failed:  got %v want %v", tcNum+1, got, tc.expectedOutput)
-		}
+		assertExpectedOutput(t, tcNum, got, tc.expectedOutput)
 	}
 }
 
@@ -126,8 +121,70 @@ func TestParseErrorDetails(t *testing.T) {
 	for tcNum, tc := range testCases {
 		got, err := ParseErrorDetails(tc.input)
 		require.NoError(t, err)
-		if got != tc.expectedOutput {
-			t.Errorf("test %d failed:  got %v want %v", tcNum+1, got, tc.expectedOutput)
+		assertExpectedOutput(t, tcNum, got, tc.expectedOutput)
+	}
+}
+
+func TestValidateInputYear(t *testing.T) {
+	testCases := []struct {
+		name           string
+		input          int
+		expectedOutput error
+	}{
+		{
+			name:           "valid year",
+			input:          2023,
+			expectedOutput: nil,
+		},
+		{
+			name:           "invalid year",
+			input:          2030,
+			expectedOutput: fmt.Errorf("400 Bad Request: input year cannot be greater than current year "),
+		},
+	}
+	for _, tc := range testCases {
+		got := ValidateInputYear(tc.input)
+		if tc.expectedOutput != nil {
+			require.Error(t, got)
+		} else {
+			require.NoError(t, got)
 		}
+	}
+}
+
+func TestValidateInputWeek(t *testing.T) {
+	testCases := []struct {
+		name           string
+		year           string
+		week           int
+		expectedOutput error
+	}{
+		{
+			name:           "valid week",
+			year:           "2023",
+			week:           3,
+			expectedOutput: nil,
+		},
+		{
+			name:           "invalid week",
+			year:           "2020",
+			week:           54,
+			expectedOutput: fmt.Errorf("400 Bad Request: input week cannot be greater than 53"),
+		},
+	}
+	for _, tc := range testCases {
+		got := ValidateInputWeek(tc.year, tc.week)
+		if tc.expectedOutput != nil {
+			require.Error(t, got)
+		} else {
+			require.NoError(t, got)
+		}
+	}
+}
+
+func assertExpectedOutput(t testing.TB, testNum int, got, want interface{}) {
+	t.Helper()
+	if got != want {
+		t.Errorf("test %d failed: got %v want %v", testNum+1, got, want)
 	}
 }
