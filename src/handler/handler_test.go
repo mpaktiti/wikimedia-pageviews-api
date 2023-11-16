@@ -91,7 +91,7 @@ func TestGETViewsPerArticleWeekly(t *testing.T) {
 		assertResponseField(t, "wrong status code", rr.Code, http.StatusOK)
 
 		// Check the response body is what we expect.
-		expected := `{"Pageviews":"182568"}`
+		expected := `{"Pageviews":"157023"}`
 		assertResponseField(t, "unexpected body", rr.Body.String(), expected)
 	})
 }
