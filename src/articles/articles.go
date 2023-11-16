@@ -67,12 +67,22 @@ func GetTopArticlesByWeek(year, week string) (string, error) {
 	// Convert input year and week to integers
 	yearInt, err := strconv.Atoi(year)
 	if err != nil {
-		// TODO return HTTP code for bad input
 		return "", err
 	}
 	weekInt, err := strconv.Atoi(week)
 	if err != nil {
-		// TODO return HTTP code for bad input
+		return "", err
+	}
+
+	// Validate that input year is not out of bounds
+	err = utilities.ValidateInputYear(yearInt)
+	if err != nil {
+		return "", err
+	}
+
+	// Validate that input week is not out of bounds
+	err = utilities.ValidateInputWeek(year, weekInt)
+	if err != nil {
 		return "", err
 	}
 
@@ -91,8 +101,6 @@ func GetTopArticlesByWeek(year, week string) (string, error) {
 		// Call the wikipedia API
 		response, err := http.Get(urls[i])
 		if err != nil {
-			// TODO log error properly
-			fmt.Print(err.Error())
 			return "", err
 		}
 
@@ -107,7 +115,6 @@ func GetTopArticlesByWeek(year, week string) (string, error) {
 			errorStatus = response.Status
 			errorDetails, err = utilities.ParseErrorDetails(responseData)
 			if err != nil {
-				fmt.Print(err.Error())
 				errorDetails = "Failed to process error details"
 			}
 			break
@@ -121,7 +128,6 @@ func GetTopArticlesByWeek(year, week string) (string, error) {
 		}
 
 		//If any items were found extract them from the response and add them to the map
-		// TODO is this if needed? is there any case where I get HTTP 200 but no articles?
 		if len(items.Items) > 0 {
 			for _, article := range items.Items[0].Articles {
 				if val, ok := articlesMap[article.Article]; ok {
@@ -164,13 +170,25 @@ func GetTopArticlesByWeek(year, week string) (string, error) {
 
 // curl http://localhost:8080/articles/top/monthly/2023/03
 func GetTopArticlesByMonth(year, month string) (string, error) {
+	// Convert input year to integer
+	yearInt, err := strconv.Atoi(year)
+	if err != nil {
+		return "", err
+	}
+
+	// TODO add test case for this
+	// Validate that input year is not out of bounds
+	err = utilities.ValidateInputYear(yearInt)
+	if err != nil {
+		return "", err
+	}
+
 	// Build URL
-	url := fmt.Sprintf("%s/%s/%s/all-days", baseURL, year, month)
+	url := fmt.Sprintf("%s/%s/%s/all-days", baseURL, year, utilities.PadString(month))
 
 	// Call the wikipedia API
 	response, err := http.Get(url)
 	if err != nil {
-		fmt.Print(err.Error())
 		return "", err
 	}
 
@@ -184,7 +202,6 @@ func GetTopArticlesByMonth(year, month string) (string, error) {
 	if response.StatusCode != http.StatusOK {
 		errorDetails, err := utilities.ParseErrorDetails(responseData)
 		if err != nil {
-			fmt.Print(err.Error())
 			errorDetails = "Failed to process error details"
 		}
 		return "", fmt.Errorf(response.Status + ": " + errorDetails)
@@ -197,10 +214,15 @@ func GetTopArticlesByMonth(year, month string) (string, error) {
 		return "", err
 	}
 
-	// TODO should I check here if len(items.Items) > 0 ??
-	top10Articles := items.Items[0].Articles[0:10]
-
-	// fmt.Printf("%+v", top10Articles)
+	// I haven't found a test case where there are no articles returned but I'm adding a check just in case, to avoid nil pointer exceptions
+	var top10Articles []Article
+	numOfArticles := len(items.Items[0].Articles)
+	if numOfArticles > 0 {
+		if numOfArticles > 10 {
+			numOfArticles = 10
+		}
+		top10Articles = items.Items[0].Articles[0:numOfArticles]
+	}
 
 	// Convert to JSON and return string
 	jsonResult, err := json.Marshal(top10Articles)

@@ -111,18 +111,39 @@ func TestGetTopArticlesByWeek(t *testing.T) {
 			expectedError:    "",
 		},
 		{
-			name:             "error case: HTTP 404 for invalid input (week > 52)",
+			name:             "top 10 most viewed articles on the 1st week of 2020 (which starts in 2019)",
+			year:             "2020",
+			week:             "1",
+			expectedArticles: `[{"Article":"Main_Page","Views":94177888,"Rank":1},{"Article":"Special:Search","Views":10662879,"Rank":2},{"Article":"Jimmy_Hoffa","Views":2032891,"Rank":3},{"Article":"Frank_Sheeran","Views":1570107,"Rank":4},{"Article":"The_Irishman_(2019_film)","Views":1479816,"Rank":5},{"Article":"The_Mandalorian","Views":1308162,"Rank":6},{"Article":"NSA_ANT_catalog","Views":1124420,"Rank":7},{"Article":"Deaths_in_2019","Views":775275,"Rank":8},{"Article":"Elizabeth_II","Views":727896,"Rank":9},{"Article":"Princess_Margaret,_Countess_of_Snowdon","Views":679889,"Rank":10}]`,
+			expectedError:    "",
+		},
+		{
+			name:             "top 10 most viewed articles on the last week of 2020 (which ends in 2021)",
+			year:             "2020",
+			week:             "53",
+			expectedArticles: `[{"Article":"Main_Page","Views":42788003,"Rank":1},{"Article":"Special:Search","Views":8661192,"Rank":2},{"Article":"Elliot_Page","Views":3754122,"Rank":3},{"Article":"Bridgerton","Views":1265183,"Rank":4},{"Article":"Emma_Portner","Views":1043047,"Rank":5},{"Article":"Ellen_Page","Views":1042798,"Rank":6},{"Article":"Wonder_Woman_1984","Views":1007296,"Rank":7},{"Article":"Elizabeth_II","Views":979450,"Rank":8},{"Article":"Bible","Views":917584,"Rank":9},{"Article":"Deaths_in_2020","Views":901244,"Rank":10}]`,
+			expectedError:    "",
+		},
+		{
+			name:             "error case: HTTP 404 for invalid input (week > 53 for year 2020)",
+			year:             "2020",
+			week:             "54",
+			expectedArticles: "",
+			expectedError:    "400 Bad Request: input week cannot be greater than 53",
+		},
+		{
+			name:             "error case: HTTP 404 for invalid input (future date - month)",
 			year:             "2023",
-			week:             "55",
+			week:             "52",
 			expectedArticles: "",
 			expectedError:    "404 Not Found: The date(s) you used are valid, but we either do not have data for those date(s), or the project you asked for is not loaded yet. Please check documentation for more information.",
 		},
 		{
-			name:             "error case: HTTP 404 for invalid input (future date)",
+			name:             "error case: HTTP 404 for invalid input (future date - year)",
 			year:             "2030",
 			week:             "03",
 			expectedArticles: "",
-			expectedError:    "404 Not Found: The date(s) you used are valid, but we either do not have data for those date(s), or the project you asked for is not loaded yet. Please check documentation for more information.",
+			expectedError:    "400 Bad Request: input year cannot be greater than current year",
 		},
 	}
 	for i, tc := range testCases {

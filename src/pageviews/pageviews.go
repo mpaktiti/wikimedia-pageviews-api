@@ -10,7 +10,6 @@ import (
 	"github.com/mpaktiti/wikimedia-pageviews-api/src/utilities"
 )
 
-// TODO Move this to the config file
 const baseURL = "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/all-agents"
 
 type Items struct {
@@ -30,7 +29,6 @@ type Item struct {
 // curl http://localhost:8080/article/Albert_Einstein/weekly/2023/03
 func GetPageviewsByWeek(article, year, week string) (int, error) {
 	// Convert input year and week to integers
-	// TODO this is duplicate code with articles.go, extract it to utilities
 	yearInt, err := strconv.Atoi(year)
 	if err != nil {
 		return 0, err
@@ -40,22 +38,35 @@ func GetPageviewsByWeek(article, year, week string) (int, error) {
 		return 0, err
 	}
 
-	// Get week range
+	// Validate that input year is not out of bounds
+	err = utilities.ValidateInputYear(yearInt)
+	if err != nil {
+		return 0, err
+	}
+
+	// Validate that input week is not out of bounds
+	err = utilities.ValidateInputWeek(year, weekInt)
+	if err != nil {
+		return 0, err
+	}
+
+	// Get the first and last days of the week
 	startDate := utilities.WeekStart(yearInt, weekInt)
+	endDate := startDate.AddDate(0, 0, 6)
 
 	// Build URL
-
 	// Wikipedia API expects months and days as 2 digits each so add a zero at the beginning if needed (done by PadString())
-	month := utilities.PadString(fmt.Sprint(int(startDate.Month())))
-	firstDay := fmt.Sprint(startDate.Year()) + month + fmt.Sprint(startDate.Day()) + "00"
-	lastDay := fmt.Sprint(startDate.Year()) + month + fmt.Sprint(startDate.AddDate(0, 0, 7).Day()) + "00"
+	startDateMonth := utilities.PadString(fmt.Sprint(int(startDate.Month())))
+	startDateDay := utilities.PadString(fmt.Sprint(startDate.Day()))
+	endDateMonth := utilities.PadString(fmt.Sprint(int(endDate.Month())))
+	endDateDay := utilities.PadString(fmt.Sprint(endDate.Day()))
+	firstDay := fmt.Sprint(startDate.Year()) + startDateMonth + startDateDay + "00"
+	lastDay := fmt.Sprint(endDate.Year()) + endDateMonth + endDateDay + "00"
 	url := fmt.Sprintf("%s/%s/daily/%s/%s", baseURL, article, firstDay, lastDay)
 
 	// Call the wikipedia API
 	response, err := http.Get(url)
 	if err != nil {
-		// TODO log error properly
-		fmt.Print(err.Error())
 		return 0, err
 	}
 
@@ -92,6 +103,19 @@ func GetPageviewsByWeek(article, year, week string) (int, error) {
 
 // curl http://localhost:8080/article/Albert_Einstein/monthly/2023/04
 func GetPageviewsByMonth(article, year, month string) (int, error) {
+	// Convert input year to integer
+	yearInt, err := strconv.Atoi(year)
+	if err != nil {
+		return 0, err
+	}
+
+	// TODO add test case for this
+	// Validate that input year is not out of bounds
+	err = utilities.ValidateInputYear(yearInt)
+	if err != nil {
+		return 0, err
+	}
+
 	lastOfMonth, err := utilities.LastDayOfMonth(year, month)
 	if err != nil {
 		return 0, err
@@ -106,8 +130,6 @@ func GetPageviewsByMonth(article, year, month string) (int, error) {
 	// Call the wikipedia API
 	response, err := http.Get(url)
 	if err != nil {
-		// TODO log error properly
-		fmt.Print(err.Error())
 		return 0, err
 	}
 
@@ -140,6 +162,19 @@ func GetPageviewsByMonth(article, year, month string) (int, error) {
 
 // curl http://localhost:8080/article/Albert_Einstein/top/monthly/2023/04
 func GetDayWithMostPageviews(article, year, month string) (string, int, error) {
+	// Convert input year to integer
+	yearInt, err := strconv.Atoi(year)
+	if err != nil {
+		return "", 0, err
+	}
+
+	// TODO add test case for this
+	// Validate that input year is not out of bounds
+	err = utilities.ValidateInputYear(yearInt)
+	if err != nil {
+		return "", 0, err
+	}
+
 	// Get month's last day
 	lastOfMonth, err := utilities.LastDayOfMonth(year, month)
 	if err != nil {
@@ -155,8 +190,6 @@ func GetDayWithMostPageviews(article, year, month string) (string, int, error) {
 	// Call the wikipedia API
 	response, err := http.Get(url)
 	if err != nil {
-		// TODO log error properly
-		fmt.Print(err.Error())
 		return "", 0, err
 	}
 

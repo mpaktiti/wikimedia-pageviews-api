@@ -18,7 +18,7 @@ type Error struct {
 	Error string
 }
 
-// TODO write tests
+// TODO add test case for this
 func ConvertPageviewsToJson(input int) ([]byte, error) {
 	pageviews := &Pageviews{Pageviews: fmt.Sprint(input)}
 	res, err := json.Marshal(pageviews)
@@ -28,7 +28,7 @@ func ConvertPageviewsToJson(input int) ([]byte, error) {
 	return res, nil
 }
 
-// TODO write tests
+// TODO add test case for this
 func ConvertTopDayPageviewsToJson(timestamp string, pageviews int) ([]byte, error) {
 	topDayPageviews := &TopDayPageviews{
 		Pageviews: fmt.Sprint(pageviews),
@@ -41,7 +41,7 @@ func ConvertTopDayPageviewsToJson(timestamp string, pageviews int) ([]byte, erro
 	return res, nil
 }
 
-// TODO write tests
+// TODO add test case for this
 func ConvertErrorToJson(input string) ([]byte, error) {
 	error := &Error{Error: input}
 	res, err := json.Marshal(error)

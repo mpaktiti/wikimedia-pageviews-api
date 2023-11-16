@@ -37,7 +37,6 @@ func TopArticlesWeeklyHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	res, err := articles.GetTopArticlesByWeek(vars["year"], vars["week"])
 	if err != nil {
-		// TODO enhancement: properly log errors
 		fmt.Println("ERROR: ", err)
 		statusCode, conversionErr := strconv.Atoi(err.Error()[:3])
 		if conversionErr != nil {
@@ -58,7 +57,6 @@ func TopArticlesMonthlyHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	res, err := articles.GetTopArticlesByMonth(vars["year"], vars["month"])
 	if err != nil {
-		// TODO enhancement: properly log errors
 		fmt.Println("ERROR: ", err)
 		statusCode, conversionErr := strconv.Atoi(err.Error()[:3])
 		if conversionErr != nil {
@@ -72,7 +70,6 @@ func TopArticlesMonthlyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	// TODO maybe just get directly []bytes output from GetTopArticlesByMonth?
 	w.Write([]byte(res))
 }
 

@@ -2,6 +2,8 @@ package utilities
 
 import (
 	"encoding/json"
+	"fmt"
+	"net/http"
 	"strconv"
 	"time"
 )
@@ -65,10 +67,8 @@ func WeekStart(year, week int) time.Time {
 // Returns the last day of the input month
 func LastDayOfMonth(year, month string) (time.Time, error) {
 	// Convert input year and week to integers
-	// TODO this is duplicate code with articles.go, extract it to utilities
 	yearInt, err := strconv.Atoi(year)
 	if err != nil {
-		// TODO log error properly
 		return time.Time{}, err
 	}
 	monthInt, err := strconv.Atoi(month)
@@ -81,6 +81,43 @@ func LastDayOfMonth(year, month string) (time.Time, error) {
 	// lastOfMonthAlternative := time.Date(yearInt, time.Month(monthInt+1), 0, 0, 0, 0, 0, time.UTC)
 
 	return lastOfMonth, nil
+}
+
+// Returns the last week of the input year
+// TODO write tests
+func lastWeekOfYear(year string) (int, error) {
+	yearToInt, err := strconv.Atoi(year)
+	if err != nil {
+		return 0, err
+	}
+	yearToDate := time.Date(yearToInt, time.January, 1, 0, 0, 0, 0, time.UTC)
+	_, lastWeek := yearToDate.AddDate(1, 0, 0).Add(-time.Nanosecond).ISOWeek()
+
+	return lastWeek, nil
+}
+
+// Validate that the input week is not greater than the last year of the input year
+func ValidateInputWeek(year string, week int) error {
+	validLastWeek, err := lastWeekOfYear(year)
+	if err != nil {
+		status500 := fmt.Sprint(http.StatusInternalServerError) + " " + http.StatusText(http.StatusInternalServerError)
+		return fmt.Errorf(status500+": %s", err.Error())
+	}
+	if week > validLastWeek {
+		status400 := fmt.Sprint(http.StatusBadRequest) + " " + http.StatusText(http.StatusBadRequest)
+		return fmt.Errorf(status400+": input week cannot be greater than %d", validLastWeek)
+	}
+	return nil
+}
+
+// Validate that the input year is not greater than the current year
+func ValidateInputYear(inputYear int) error {
+	currentYear := time.Now().Year()
+	if inputYear > currentYear {
+		status400 := fmt.Sprint(http.StatusBadRequest) + " " + http.StatusText(http.StatusBadRequest)
+		return fmt.Errorf(status400 + ": input year cannot be greater than current year")
+	}
+	return nil
 }
 
 // Wikipedia API expects months and days as 2 digits
