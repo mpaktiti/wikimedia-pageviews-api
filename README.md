@@ -42,9 +42,11 @@ If you have [Taskfile](https://taskfile.dev/) and/or [Go](https://go.dev/doc/ins
 
 ## API Documentation
 
-- [Swagger docs](docs/index.html)
+- To view the API documentation open the [Swagger docs index.html](docs/index.html) file in your browser.
 
   ![Swagger docs screenshot](docs/swagger_docs.png "Swagger docs")
+
+  Note that the "Try it out" functionality does not work at the moment but the generated curl command is valid so you can use it to create your curl requests.
 
 ## Call the API
 
@@ -85,6 +87,7 @@ If you have [Taskfile](https://taskfile.dev/) and/or [Go](https://go.dev/doc/ins
 - Improve the regular expressions that match the URL called with the route. The one validating the article name works for most wikipedia articles, but fails for some cases with special characters. For example, if you call try to get the pageviews for the article `https://en.wikipedia.org/wiki/Æthelred_the_Unready` you will get a 404 as the regular expression cannot match the request to a route. However, if you URL-encode the input it will work: `http://localhost:8080/article/%25C3%2586thelred_the_Unready/weekly/2023/03`. This mostly happens with Extended ASCII characters. URLs like `http://localhost:8080/article/Davy's_on_the_Road_Again/weekly/2023/03` or `http://localhost:8080/article/C_(programming_language)/monthly/2023/10` will work.
 - Currently the API works only for `en.wikipedia`. A future improvement could be to make this part of the request input so the API can support all available languages.
 - Documentation: move documentation in the code by adding swagger comments and be able to generate updated documentation. Use [go-swagger](https://github.com/go-swagger/go-swagger) to do that.
+- Fix the "Try it out" functionality of Swagger. The generated curl command is valid but "Execute" throws a `TypeError: Failed to fetch` error. I suspect a CORS issue.
 - Improve error responses: currently when an error occurs the API returns a JSON doc containing one `Error` string. Refactor this to include more info properly structured. For example:
   ```json
   {

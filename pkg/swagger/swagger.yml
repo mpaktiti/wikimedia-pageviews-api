@@ -14,8 +14,7 @@ produces:
   - application/json
 schemes:
   - http
-servers:
-  - url: http://localhost:8080
+host: localhost:8080
 swagger: "2.0"
 
 paths:
